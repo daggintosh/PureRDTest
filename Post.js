@@ -5,22 +5,35 @@ fetch(`https://www.reddit.com/${id}.json`)
     .then(result => result.json())
     .then(result => {
         const div = document.getElementById("Post")
-        const { title, subreddit_name_prefixed, ups, selftext, url, media  } = result[0].data.children[0].data
-        var video = media?.reddit_video.hls_url
+        const { title, created_utc, subreddit_name_prefixed, ups, selftext, url, media  } = result[0].data.children[0].data
+        let video = media?.reddit_video.hls_url
         document.title = title
         div.innerHTML = `
         <h2>${title}</h2>
         <h4>${subreddit_name_prefixed}</h4>
         <p>${ups} Upvotes</p>
         <p>${selftext}</p>
-        <a href="${url}">${url}</a>
-        <img src="${url}"></img>
-        <video><source src=\"${media?.reddit_video.hls_url}\"></video>
-        `
-        // const table = document.getElementById("Comments")
-        // for (const i in result[1].data.children)
-        // {
-        //     const newRow = table.insertRow();
-        //     newRow.innerHTML = CommentsTemplate(result.data.children[i].data)
-        // }
+        <a href="${url}">${url}</a>`
+        + (media
+            ? `<video id="video"><source src=\"${media?.reddit_video.hls_url}\"></video>`
+            : `<img src="${url}" alt="Reddit doesn't have alt text"></img>`
+        )
+
+        const videoPlayer = document.getElementById("video")
+        if (videoPlayer) videoPlayer.setAttribute("controls", "controls")
+
+        const table = document.getElementById("Comments")
+        for (const i in result[1].data.children)
+        {
+            const children = result[1].data.children
+            if (children[i] === children[children.length - 1])
+            {
+                    const newRow = table.insertRow();
+                    newRow.innerHTML = `<p>... and ${children[i].data.count} more</p`
+            }
+            else {
+                    const newRow = table.insertRow();
+                    newRow.innerHTML = CommentsTemplate(children[i].data)
+            }
+        }
     })
