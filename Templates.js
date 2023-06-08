@@ -13,7 +13,7 @@ function CommentsTemplate(data) {
     return `<h4>${author}</h4>
             <p>${creationDate.toLocaleDateString()} at ${creationDate.toLocaleTimeString()}</p>
             <p>${body}</p>
-            <p>${ups} Upvotes</p>`
+            <p>${ups.toLocaleString()} Upvotes</p>`
 }
 
 function HintToString(hint) {
